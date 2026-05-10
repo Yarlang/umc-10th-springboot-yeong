@@ -14,11 +14,13 @@ import com.example.umc10th.domain.store.entity.Store;
 import com.example.umc10th.domain.store.exception.StoreException;
 import com.example.umc10th.domain.store.exception.code.StoreErrorCode;
 import com.example.umc10th.domain.store.repository.StoreRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ReviewService {
 
     private final MemberRepository memberRepository;
@@ -27,9 +29,7 @@ public class ReviewService {
     private final MemberMissionRepository memberMissionRepository;
 
     // 리뷰 작성
-    public ReviewResDTO.ReviewDTO postReview(ReviewReqDTO.Review reviewReq) {
-        Long memberId = 1L; // // Seed에서 만든 더미 유저 (나중에 변경)
-
+    public ReviewResDTO.ReviewDTO postReview(Long memberId, ReviewReqDTO.Review reviewReq) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(()-> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
