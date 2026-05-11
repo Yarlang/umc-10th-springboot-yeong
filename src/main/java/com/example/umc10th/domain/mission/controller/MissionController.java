@@ -5,10 +5,9 @@ import com.example.umc10th.domain.mission.dto.MissionResDTO;
 import com.example.umc10th.domain.mission.exception.code.MissionSuccessCode;
 import com.example.umc10th.domain.mission.service.MissionService;
 import com.example.umc10th.global.apiPayload.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,17 +45,20 @@ public class MissionController {
     @PostMapping("/stores/{storeId}/missions")
     public ApiResponse<Void>  createMission(
             @PathVariable Long storeId,
-            @RequestBody MissionReqDTO.CreateMission dto
+            @RequestBody @Valid MissionReqDTO.CreateMission dto
     ){
         return ApiResponse.onSuccess(MissionSuccessCode.STORE_MISSION_CREATE_SUCCESS, missionService.createMission(storeId, dto));
     }
 
     // 가게 내 미션들 조회
     @GetMapping("/stores/{storeId}/missions")
-    public ApiResponse<List<MissionResDTO.GetMission>> getMissions(
-            @PathVariable Long storeId
+    public ApiResponse<MissionResDTO.Pagination<MissionResDTO.GetMission>> getMissions(
+            @PathVariable Long storeId,
+            @RequestParam Integer pageSize,
+            @RequestParam String cursor,
+            @RequestParam String query
     ){
-        return ApiResponse.onSuccess(MissionSuccessCode.STORE_MISSION_INQUIRY_SUCCESS, missionService.getMissions(storeId));
+        return ApiResponse.onSuccess(MissionSuccessCode.STORE_MISSION_INQUIRY_SUCCESS, missionService.getMissions(storeId, pageSize, cursor, query));
     }
 
 }

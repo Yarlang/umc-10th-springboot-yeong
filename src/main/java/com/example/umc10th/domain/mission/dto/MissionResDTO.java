@@ -54,4 +54,13 @@ public class MissionResDTO {
             Integer reward,
             String content
     ){}
+
+    // 페이지네이션 틀
+    @Builder
+    public record Pagination<T>(
+            List<T> data,
+            Boolean hasNext,
+            String nextCursor,
+            Integer pageSize
+    ){}
 }

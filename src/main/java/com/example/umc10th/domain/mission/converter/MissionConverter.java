@@ -82,4 +82,19 @@ public class MissionConverter {
                 .missionId(mission.getId())
                 .build();
     }
+
+    // 페이지네이션 틀 생성
+    public static <T> MissionResDTO.Pagination<T> toPagination(
+            List<T> data,
+            Boolean hasNext,
+            String nextCursor,
+            Integer pageSize
+    ){
+        return MissionResDTO.Pagination.<T>builder()
+                .data(data)
+                .hasNext(hasNext)
+                .nextCursor(nextCursor)
+                .pageSize(pageSize)
+                .build();
+    }
 }

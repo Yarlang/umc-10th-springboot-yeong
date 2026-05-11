@@ -16,6 +16,7 @@ import com.example.umc10th.domain.store.exception.code.StoreErrorCode;
 import com.example.umc10th.domain.store.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,17 +104,55 @@ public class MissionService {
         return null;
     }
 
-    // 가게 내 미션 조회
-    public List<MissionResDTO.GetMission> getMissions(
-            Long storeId
+    // 가게 내 미션들 조회
+    public MissionResDTO.Pagination<MissionResDTO.GetMission> getMissions(
+            Long storeId,
+            Integer pageSize,
+            String cursor,
+            String query
     ){
-        // 가게 내 미션들 조회
-        List<Mission> missionList = missionRepository.findAllByStore_Id(storeId);
+        // 페이지 정보들을 PageRequest로 만들기
+        PageRequest pageRequest = PageRequest.of(0, pageSize);
+
+        long idCursor;
+        Slice<Mission> missionList;
+        String nextCursor;
+
+        // 커서가 있는 경우
+        if (!cursor.equals("-1")){
+
+            // 커서 분리
+            String[] cursorSplit = cursor.split(":");
+            switch (query.toLowerCase()) {
+                case "id" -> {
+
+                    // 커서 타입 변환
+                    Long prevCursor = Long.parseLong(cursorSplit[0]);
+                    idCursor = Long.parseLong(cursorSplit[1]);
+
+                    // 가게 내 미션들 조회 & where절에 커서값 기입
+                    missionList = missionRepository.findMissionsByStore_IdAndIdLessThanOrderByIdDesc(
+                            storeId,
+                            idCursor,
+                            pageRequest
+                    );
+                }
+                default -> throw new MissionException(MissionErrorCode.QUERY_NOT_VALID);
+            }
+        } else {
+            // 커서 없이 조회
+            missionList = missionRepository.findMissionsByStore_IdOrderByIdDesc(storeId, pageRequest);
+        }
+
+        // 다음 커서 계산
+        nextCursor = missionList.getContent().getLast().getId()+ ":" + missionList.getContent().getLast().getId();
 
         // 미션들 응답 DTO로 포장하기
-        return missionList.stream()
-                .map(MissionConverter::toGetMission)
-                .toList();
+        return MissionConverter.toPagination(
+                missionList.map(MissionConverter::toGetMission).toList(),
+                missionList.hasNext(),
+                nextCursor,
+                missionList.getSize()
+        );
     }
-
 }
