@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ReviewErrorCode implements BaseErrorCode {
-    QUERY_INVALID(HttpStatus.BAD_REQUEST, "QUERY400_1", "해당 쿼리는 유효하지 않습니다")
+    QUERY_INVALID(HttpStatus.BAD_REQUEST, "REVIEW400_1", "해당 쿼리는 유효하지 않습니다"),
+    CURSOR_INVALID(HttpStatus.BAD_REQUEST, "REVIEW400_2", "커서 형식이 올바르지 않습니다"),
     ;
 
     private final HttpStatus status;

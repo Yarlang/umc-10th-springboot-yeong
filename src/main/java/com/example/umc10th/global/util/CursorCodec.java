@@ -1,6 +1,8 @@
 package com.example.umc10th.global.util;
 
 import com.example.umc10th.domain.review.dto.ReviewCursor;
+import com.example.umc10th.domain.review.exception.code.ReviewErrorCode;
+import com.example.umc10th.global.apiPayload.exception.ProjectException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -20,7 +22,7 @@ public class CursorCodec {
             return Base64.getUrlEncoder().withoutPadding()
                     .encodeToString(json.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            throw new IllegalArgumentException("cursor encode fail", e);
+            throw new ProjectException(ReviewErrorCode.CURSOR_INVALID);
         }
     }
 
@@ -30,7 +32,7 @@ public class CursorCodec {
             String json = new String(decoded, StandardCharsets.UTF_8);
             return om.readValue(json, ReviewCursor.class);
         } catch (Exception e) {
-            throw new IllegalArgumentException("cursor decode fail", e);
+            throw new ProjectException(ReviewErrorCode.CURSOR_INVALID);
         }
     }
 }
