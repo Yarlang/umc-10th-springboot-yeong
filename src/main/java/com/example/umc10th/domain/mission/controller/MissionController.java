@@ -43,7 +43,7 @@ public class MissionController {
 
     // 가게 미션 생성
     @PostMapping("/stores/{storeId}/missions")
-    public ApiResponse<Void>  createMission(
+    public ApiResponse<Long>  createMission(
             @PathVariable Long storeId,
             @RequestBody @Valid MissionReqDTO.CreateMission dto
     ){
